@@ -4,7 +4,16 @@ let ws = new WebSocket("ws://localhost:8080");
 
 let connected = false
 
-ws.onMessage = (msg) => { print("Message: " + msg); }
+function chat(message){
+    ChatLib.chat("&d Mute Evade >>&f " + message)
+}
+
+ws.onMessage = (msg) => { 
+    msg = JSON.parse(msg)
+    if (msg.method == "message"){
+        chat(msg.data)
+    }
+}
 
 ws.onError = (exception) => { print("Error: " + exception); }
 
@@ -14,9 +23,9 @@ ws.onOpen = () => { print("Socket Opened");}
 ws.onClose = () => {
     connected = false
     if(!connected){
-        ChatLib.chat("&d Mute Evade >>&f There has been a connection issue with the websocket. Attempting to reconnect.")
+        chat("There has been a connection issue with the websocket. Attempting to reconnect.")
     } else {
-        return ChatLib.chat("&d Mute Evade >>&f Reconnect Failed. Try reloading with /ct reload")
+        return chat("Reconnect Failed. Try reloading with /ct reload")
     }
     connected = true
     setTimeout(() => ws.reconnect(), 5000)
