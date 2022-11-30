@@ -1,3 +1,4 @@
+require('dotenv').config();
 const mineflayer = require('mineflayer')
 
 const WebSocket = require('ws')
@@ -7,21 +8,19 @@ const bot = mineflayer.createBot({
     viewDistance: 'tiny',
     version: '1.17.1',
     defaultChatPatterns: false,
-    host: 'mc.hypixel.net', // minecraft server ip
-    username: '', // minecraft username
-    auth: 'microsoft' // only set if you need microsoft auth, then set this to 'microsoft'
+    host: 'mc.hypixel.io', // minecraft server ip
+    username: process.env.ACCOUNT_NAME, // minecraft username
+    auth: process.env.AUTH // only set if you need microsoft auth, then set this to 'microsoft'
 })
 
 wss.on('connection', function connection(ws) {
   ws.on('message', function message(data) {
-    console.log('received: %s', data);
     bot.chat(`${data}`)
   });
 });
 
 bot.on('message', (message) => {
     console.log(message.toAnsi())
-    // wss.send()
 })
 
 // Log errors and kick reasons:
