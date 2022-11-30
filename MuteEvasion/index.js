@@ -1,6 +1,8 @@
 import WebSocket from "WebSocket";
+import Settings from "./config"
 
-let ws = new WebSocket("ws://localhost:8080");
+
+let ws = new WebSocket(`ws://${Settings.host}:${Settings.port}`);
 
 let connected = false
 
@@ -35,7 +37,7 @@ ws.connect();
 
 // Parsing messages sent from the client and sending them to the server
 register('messageSent', (message, event) => {
-    if (!message.startsWith("/") || message.startsWith("/pc") || message.startsWith("/gc") || message.startsWith("/msg")) {
+    if (!message.startsWith("/") || message.startsWith("/pc") || message.startsWith("/gc") || message.startsWith("/msg") && Settings.enabled) {
         cancel(event)
         ws.send(JSON.stringify({ method: "message", data: message }))
     }
@@ -47,6 +49,16 @@ register("command", (...args) =>{
     }
     if (args[0] == "rc"){
         console.log(args)
-        ws.send(JSON.stringify({method: "message", data: args.join(" ").replace(rc, "/")}))
+        ws.send(JSON.stringify({method: "message", data: args.join(" ").replace("rc ", "/")}))
     }
-}).setName("muev").setTabCompletions(["rc", "testconnection"])
+    if (args[0] == "settings"){
+        Settings.openGUI();
+    }
+    if (args[0] == "help"){
+        chat("MuteEvasion Commands: \n /testconnection - Test the connection to the websocket server. \n /rc - Send a message to the server as if it was sent from the client.\n /settings - Open the settings GUI. \n /help - Show this message.")
+    }
+
+    if(!args){
+        chat("Invalid Command. Try /muev help")
+    }
+}).setName("muev").setTabCompletions(["help", "rc", "testconnection", "settings"])

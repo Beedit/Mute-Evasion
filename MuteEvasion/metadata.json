@@ -4,5 +4,8 @@
     "description": "A CT module to detect when you are muted and automatically sends your messages to an alt account.",
     "version": "0.1.0",
     "entry": "index.js",
-    "requires": ["WebSocket"]
+    "requires": [
+        "WebSocket",
+        "Vigilance"
+    ]
 }
