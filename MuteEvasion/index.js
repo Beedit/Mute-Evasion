@@ -2,30 +2,42 @@ import WebSocket from "WebSocket";
 
 let ws = new WebSocket("ws://localhost:8080");
 
-ws.onMessage = (msg) => {
-  print("Message: " + msg);
-}
+let connected = false
 
-ws.onError = (exception) => {
-    print("Error: " + exception);
-}
+ws.onMessage = (msg) => { print("Message: " + msg); }
 
-ws.onOpen = () => {
-    print("Socket Opened");
-    ws.send("/pc test");
-}
+ws.onError = (exception) => { print("Error: " + exception); }
 
+ws.onOpen = () => { print("Socket Opened");}
+
+// This barely works. 
 ws.onClose = () => {
-    print("Socket Closed");
+    connected = false
+    if(!connected){
+        ChatLib.chat("&d Mute Evade >>&f There has been a connection issue with the websocket. Attempting to reconnect.")
+    } else {
+        return ChatLib.chat("&d Mute Evade >>&f Reconnect Failed. Try reloading with /ct reload")
+    }
+    connected = true
+    setTimeout(() => ws.reconnect(), 5000)
 }
 
 ws.connect();
+
+// Parsing messages sent from the client and sending them to the server
 register('messageSent', (message, event) => {
-    if (!message.startsWith("/") || message.startsWith("/pc") || message.startsWith("/gc" || message.startsWith("/msg"))){
+    if (!message.startsWith("/") || message.startsWith("/pc") || message.startsWith("/gc") || message.startsWith("/msg")) {
         cancel(event)
-        ws.send(message)
-    } else if(message.startsWith("/runcommand ")){
-        cancel(event)
-        ws.send(message.replace("/runcommand ", "/"))
+        ws.send(JSON.stringify({ method: "message", data: message }))
     }
 });
+
+register("command", (...args) =>{
+    if(args[0] == "testconnection"){
+        ws.send(JSON.stringify({ method: "testConnection" }))
+    }
+    if (args[0] == "rc"){
+        console.log(args)
+        ws.send(JSON.stringify({method: "message", data: args.join(" ").replace(rc, "/")}))
+    }
+}).setName("muev").setTabCompletions(["rc", "testconnection"])

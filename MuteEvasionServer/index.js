@@ -8,21 +8,27 @@ const bot = mineflayer.createBot({
     viewDistance: 'tiny',
     version: '1.17.1',
     defaultChatPatterns: false,
-    host: 'mc.hypixel.io', // minecraft server ip
-    username: process.env.ACCOUNT_NAME, // minecraft username
-    auth: process.env.AUTH // only set if you need microsoft auth, then set this to 'microsoft'
+    host: 'mc.hypixel.io',
+    username: process.env.ACCOUNT_NAME,
+    auth: process.env.AUTH
 })
 
+// This is awful dont even like try and look at it. Ill add some actually intelligent things to it another time.
 wss.on('connection', function connection(ws) {
   ws.on('message', function message(data) {
-    bot.chat(`${data}`)
+    data = JSON.parse(data)
+    if (data.method == "testConnection"){
+      console.log("Test Connection")
+    }
+    if (data.method == "message"){
+      bot.chat(`${data.message}`)
+    }
   });
 });
 
-bot.on('message', (message) => {
+bot.on('message', (message, jsonMSG) => {
     console.log(message.toAnsi())
 })
 
-// Log errors and kick reasons:
 bot.on('kicked', console.log)
 bot.on('error', console.log)
