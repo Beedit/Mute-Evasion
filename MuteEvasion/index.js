@@ -5,15 +5,16 @@ import Settings from "./config"
 let ws = new WebSocket(`ws://${Settings.host}:${Settings.port}`);
 
 let connected = false
+let unload = false
 
 function chat(message){
     ChatLib.chat("&d Mute Evade >>&f " + message)
 }
 
-ws.onMessage = (msg) => { 
-    msg = JSON.parse(msg)
+ws.onMessage = (msg) => {
     if (msg.method == "message"){
         chat(msg.data)
+        console.log(msg.data)
     }
 }
 
@@ -23,21 +24,26 @@ ws.onOpen = () => { print("Socket Opened");}
 
 // This barely works. 
 ws.onClose = () => {
-    connected = false
-    if(!connected){
-        chat("There has been a connection issue with the websocket. Attempting to reconnect.")
-    } else {
-        return chat("Reconnect Failed. Try reloading with /ct reload")
+    if (Settings.enabled){
+        connected = false
+        if(!connected && !unload){
+            chat("There has been a connection issue with the websocket. Attempting to reconnect.")
+        } else if (unload){
+            return
+        }
+        else {
+            return chat("Reconnect Failed. Try reloading with /ct reload")
+        }
+        connected = true
+        setTimeout(() => ws.reconnect(), 5000)
     }
-    connected = true
-    setTimeout(() => ws.reconnect(), 5000)
 }
-
-ws.connect();
-
+if(Settings.enabled){
+    ws.connect();
+}
 // Parsing messages sent from the client and sending them to the server
 register('messageSent', (message, event) => {
-    if (!message.startsWith("/") || message.startsWith("/pc") || message.startsWith("/gc") || message.startsWith("/msg") && Settings.enabled) {
+    if ((!message.startsWith("/") || message.startsWith("/pc") || message.startsWith("/gc") || message.startsWith("/msg")) && Settings.enabled) {
         cancel(event)
         ws.send(JSON.stringify({ method: "message", data: message }))
     }
@@ -62,3 +68,9 @@ register("command", (...args) =>{
         chat("Invalid Command. Try /muev help")
     }
 }).setName("muev").setTabCompletions(["help", "rc", "testconnection", "settings"])
+
+register("gameunload", () => {
+    unload = true
+    ws.close()
+    chat("Disconnected from the websocket server.")
+})
