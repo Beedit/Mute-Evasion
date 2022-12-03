@@ -16,30 +16,30 @@ I got muted on hypixel for a month so I made this. Yes it would have been easier
 ### These instructions are using commands for linux. 
 1. Clone the git repo
 ```sh
-    git clone https://github.com/Beedit/Mute-Evasion.git
+git clone https://github.com/Beedit/Mute-Evasion.git
 ```
 2. cd into the repo
 ```sh
-    cd Mute-Evasion
+cd Mute-Evasion
 ```
 3. Install the chat triggers module. (This may be added to the ct website if they allow it lol)
 ```sh
-    cd ..
-    cp -r MuteEvasion ~/path/to/your/installation/config/ChatTriggers/modules
+cd ..
+cp -r MuteEvasion ~/path/to/your/installation/config/ChatTriggers/modules
 ```
 4. Copy the .env.example file in the MuteEvasionServer folder and set values in it
 ```sh
-    cd MuteEvasionServer
-    cp .env.example .env
-    nano .env
+cd MuteEvasionServer
+cp .env.example .env
+nano .env
 ```
 
 5. Run the server
 ```sh
-    node index.js
+node index.js
 ```
 
 6. In minecraft reload ct
 ```sh
-    /ct reload
+/ct reload
 ```
