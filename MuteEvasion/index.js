@@ -8,19 +8,25 @@ let connected = false
 let unload = false
 
 function chat(message){
-    ChatLib.chat("&d Mute Evade >>&f " + message)
+    ChatLib.chat("&dMute Evade >>&f " + message)
 }
 
 ws.onMessage = (msg) => {
+    msg = JSON.parse(msg)
     if (msg.method == "message"){
-        chat(msg.data)
         console.log(msg.data)
+        chat(msg.data)
     }
 }
 
 ws.onError = (exception) => { print("Error: " + exception); }
 
-ws.onOpen = () => { print("Socket Opened");}
+ws.onOpen = () => { 
+    console.log("Socket Opened");
+    chat("Connection established with the websocket.")
+    ws.send(JSON.stringify({method: "username", data: Player.getName()}))
+
+}
 
 // This barely works. 
 ws.onClose = () => {
@@ -43,7 +49,7 @@ if(Settings.enabled){
 }
 // Parsing messages sent from the client and sending them to the server
 register('messageSent', (message, event) => {
-    if ((!message.startsWith("/") || message.startsWith("/pc") || message.startsWith("/gc") || message.startsWith("/msg")) && Settings.enabled) {
+    if ((!message.startsWith("/") || message.startsWith("/pc") || message.startsWith("/gc") || message.startsWith("/msg") || message.startsWith("/r")) && Settings.enabled) {
         cancel(event)
         ws.send(JSON.stringify({ method: "message", data: message }))
     }
@@ -61,13 +67,15 @@ register("command", (...args) =>{
         Settings.openGUI();
     }
     if (args[0] == "help"){
-        chat("MuteEvasion Commands: \n /testconnection - Test the connection to the websocket server. \n /rc - Send a message to the server as if it was sent from the client.\n /settings - Open the settings GUI. \n /help - Show this message.")
+        chat("MuteEvasion Commands: \n /muev testconnection - Test the connection to the websocket server. \n /muev rc - Send a message to the server as if it was sent from the client.\n /muev settings - Open the settings GUI. \n /muev setUsername - Lets the other client know what your username is. \n /muev help - Show this message.")
     }
-
-    if(!args){
+    if(args[0] == "setUsername"){
+        ws.send(JSON.stringify({method: "username", data: Player.getName()}))
+    }
+    if(args[0] == null){
         chat("Invalid Command. Try /muev help")
     }
-}).setName("muev").setTabCompletions(["help", "rc", "testconnection", "settings"])
+}).setName("muev").setTabCompletions(["help", "rc", "testconnection", "settings", "setUsername"])
 
 register("gameunload", () => {
     unload = true
