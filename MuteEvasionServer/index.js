@@ -50,5 +50,9 @@ bot.on('message', (message, jsonMsg) => {
     }
 })
 
+bot.on("login", () => {
+  bot.chat("§")
+})
+
 bot.on('kicked', console.log)
 bot.on('error', console.log)
