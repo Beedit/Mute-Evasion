@@ -5,7 +5,7 @@
 - [x] Functional way to send messages from muted client to unmuted client
 - [x] Functional way to sent messages from unmuted client to muted client (for things like /msg)
 - [ ] Fix a ton of bugs I know exist.
-- [ ] Make nice setup instructions 
+- [x] Make nice setup instructions 
 
 ## Why?
 
