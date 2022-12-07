@@ -3,7 +3,7 @@ import { @Vigilant, @TextProperty, @ColorProperty, @ButtonProperty, @SwitchPrope
 
 @Vigilant("MuteEvade", "MuteEvade", {
     getCategoryComparator: () => (a, b) => {
-        const categories = ["General"]
+        const categories = ["General", "Bot"]
         return categories.indexOf(a.name) - categories.indexOf(b.name)
     }
 })
@@ -30,10 +30,18 @@ class Settings {
         placeholder: "localhost"
     })
     host = "localhost";
+    // Unused for now
+    @SwitchProperty({
+        name: "Dungeon Compatability",
+        description: "When someone says something such as going, it will automatically leave the party and rejoin when it gets invited.",
+        category: "Bot"
+    })
+    dungeonCompatability = true;
 
     constructor() {
         this.initialize(this);
-        this.setCategoryDescription("General", "MuteEvasion Settings");
+        this.setCategoryDescription("General", "&dMuteEvasion Settings");
+        this.setCategoryDescription("Bot", "&dBot settings.");
     }
 }
 

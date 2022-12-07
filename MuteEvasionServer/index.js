@@ -12,7 +12,8 @@ const bot = mineflayer.createBot({
     username: process.env.ACCOUNT_NAME,
     auth: process.env.AUTH
 })
-let username = ""
+
+let username = "";
 
 // This is awful dont even like try and look at it. I'll add some actually intelligent things to it another time.
 wss.on('connection', function connection(ws) {
@@ -29,13 +30,13 @@ wss.on('connection', function connection(ws) {
     if (data.method == "message"){
       bot.chat(`${data.data}`)
     }
-    if (data.method == "username"){
-      username = data.data
+    if (data.method == "configUpdate"){
+      username = data.data.username
     }
   });
 });
 
-bot.on('message', (message, jsonMsg) => {
+bot.on('message', (message) => {
     console.log(message.toAnsi())
     if (message.toString().includes(`${username} has invited you to join their party!`)){
       bot.chat(`/p join ${username}`)

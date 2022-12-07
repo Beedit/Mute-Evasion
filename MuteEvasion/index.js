@@ -28,7 +28,7 @@ ws.onOpen = () => {
 
 }
 
-// This barely works. 
+// This barely works. It might not work at all :/
 ws.onClose = () => {
     if (Settings.enabled){
         connected = false
@@ -44,6 +44,7 @@ ws.onClose = () => {
         setTimeout(() => ws.reconnect(), 5000)
     }
 }
+
 if(Settings.enabled){
     ws.connect();
 }
@@ -69,10 +70,10 @@ register("command", (...args) =>{
     if (args[0] == "help"){
         chat("MuteEvasion Commands: \n /muev testconnection - Test the connection to the websocket server. \n /muev rc - Send a message to the server as if it was sent from the client.\n /muev settings - Open the settings GUI. \n /muev setUsername - Lets the other client know what your username is. \n /muev help - Show this message.")
     }
-    if(args[0] == "setUsername"){
-        ws.send(JSON.stringify({method: "username", data: Player.getName()}))
+    if(args[0] == "setusername"){
+        ws.send(JSON.stringify({method: "configUpdate", data: {username: Player.getName()}}))
     }
-    if(args[0] == null){
+    else {
         chat("Invalid Command. Try /muev help")
     }
 }).setName("muev").setTabCompletions(["help", "rc", "testconnection", "settings", "setUsername"])
